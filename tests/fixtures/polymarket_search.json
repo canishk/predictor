@@ -1,0 +1,24 @@
+{
+  "events": [
+    {
+      "id": "evt-1",
+      "title": "Argentina vs Brazil",
+      "active": true,
+      "volume": 50000,
+      "liquidity": 25000,
+      "markets": [
+        {
+          "id": "mkt-1",
+          "question": "Will Argentina beat Brazil?",
+          "outcomes": "[\"Argentina\", \"Brazil\"]",
+          "outcomePrices": "[\"0.64\", \"0.36\"]",
+          "clobTokenIds": "[\"token-home\", \"token-away\"]",
+          "volume": 50000,
+          "liquidity": 25000,
+          "active": true,
+          "closed": false
+        }
+      ]
+    }
+  ]
+}

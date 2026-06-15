@@ -1,0 +1,82 @@
+"""Seed team name mappings for Football-Data <-> Polymarket resolution."""
+
+SEED_MAPPINGS: list[tuple[str, str]] = [
+    ("United States", "USA"),
+    ("United States", "US"),
+    ("United States", "United States of America"),
+    ("Iran", "IR Iran"),
+    ("South Korea", "Korea Republic"),
+    ("South Korea", "Republic of Korea"),
+    ("South Korea", "South Korea"),
+    ("England", "England"),
+    ("Brazil", "Brazil"),
+    ("Argentina", "Argentina"),
+    ("Germany", "Germany"),
+    ("France", "France"),
+    ("Spain", "Spain"),
+    ("Portugal", "Portugal"),
+    ("Netherlands", "Netherlands"),
+    ("Belgium", "Belgium"),
+    ("Croatia", "Croatia"),
+    ("Mexico", "Mexico"),
+    ("Japan", "Japan"),
+    ("Australia", "Australia"),
+    ("Canada", "Canada"),
+    ("Morocco", "Morocco"),
+    ("Senegal", "Senegal"),
+    ("Switzerland", "Switzerland"),
+    ("Poland", "Poland"),
+    ("Serbia", "Serbia"),
+    ("Denmark", "Denmark"),
+    ("Wales", "Wales"),
+    ("Scotland", "Scotland"),
+    ("Uruguay", "Uruguay"),
+    ("Colombia", "Colombia"),
+    ("Ecuador", "Ecuador"),
+    ("Peru", "Peru"),
+    ("Chile", "Chile"),
+    ("Costa Rica", "Costa Rica"),
+    ("Panama", "Panama"),
+    ("Jamaica", "Jamaica"),
+    ("Honduras", "Honduras"),
+    ("Nigeria", "Nigeria"),
+    ("Ghana", "Ghana"),
+    ("Cameroon", "Cameroon"),
+    ("Tunisia", "Tunisia"),
+    ("Algeria", "Algeria"),
+    ("Egypt", "Egypt"),
+    ("Saudi Arabia", "Saudi Arabia"),
+    ("Qatar", "Qatar"),
+    ("United Arab Emirates", "UAE"),
+    ("China PR", "China"),
+    ("New Zealand", "New Zealand"),
+    ("Paraguay", "Paraguay"),
+    ("Bolivia", "Bolivia"),
+    ("Venezuela", "Venezuela"),
+    ("Turkey", "Turkey"),
+    ("Türkiye", "Turkey"),
+    ("Ukraine", "Ukraine"),
+    ("Sweden", "Sweden"),
+    ("Norway", "Norway"),
+    ("Austria", "Austria"),
+    ("Czech Republic", "Czechia"),
+    ("Czech Republic", "Czech Republic"),
+    ("Romania", "Romania"),
+    ("Hungary", "Hungary"),
+    ("Greece", "Greece"),
+    ("Ireland", "Republic of Ireland"),
+    ("Northern Ireland", "Northern Ireland"),
+    ("Ivory Coast", "Côte d'Ivoire"),
+    ("Ivory Coast", "Ivory Coast"),
+]
+
+
+def seed_team_mappings(db) -> None:
+    from app.models import TeamNameMapping
+
+    existing = {m.alias.lower() for m in db.query(TeamNameMapping).all()}
+    for canonical, alias in SEED_MAPPINGS:
+        if alias.lower() not in existing:
+            db.add(TeamNameMapping(canonical_name=canonical, alias=alias, source="seed"))
+            existing.add(alias.lower())
+    db.commit()

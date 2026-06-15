@@ -1,0 +1,14 @@
+{
+  "matches": [
+    {
+      "id": 500001,
+      "utcDate": "2026-06-15T18:00:00Z",
+      "status": "SCHEDULED",
+      "matchday": 1,
+      "stage": "GROUP_STAGE",
+      "group": "GROUP_A",
+      "homeTeam": {"id": 10, "name": "Argentina", "shortName": "Argentina", "tla": "ARG"},
+      "awayTeam": {"id": 20, "name": "Brazil", "shortName": "Brazil", "tla": "BRA"}
+    }
+  ]
+}
