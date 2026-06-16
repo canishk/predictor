@@ -36,6 +36,8 @@ class MatchQueryService:
                     kickoff=fixture.utc_date,
                     status=fixture.status,
                     day_bucket=fixture.day_bucket,
+                    home_score=fixture.home_score,
+                    away_score=fixture.away_score,
                     winner_prediction=prediction.winner if prediction else None,
                     home_win_probability=prediction.home_win_probability if prediction else None,
                     away_win_probability=prediction.away_win_probability if prediction else None,
@@ -75,6 +77,8 @@ class MatchQueryService:
                 stage=fixture.stage,
                 matchday=fixture.matchday,
                 day_bucket=fixture.day_bucket,
+                home_score=fixture.home_score,
+                away_score=fixture.away_score,
             ),
             prediction=PredictionDetailSchema(
                 winner=prediction.winner if prediction else None,

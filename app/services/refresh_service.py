@@ -8,6 +8,7 @@ from app.repositories.team_mapping_repository import TeamMappingRepository, Team
 from app.services.form_service import build_team_form_map, empty_form
 from app.services.market_matcher import MarketMatcherService
 from app.services.prediction_service import PredictionService
+from app.utils.cache import cache
 
 
 class RefreshService:
@@ -24,29 +25,33 @@ class RefreshService:
         self.prediction_service = PredictionService()
 
     async def run(self) -> dict:
-        today_matches, tomorrow_matches, all_matches = await self.football.get_today_and_tomorrow_matches()
+        cache.clear()
+        buckets, all_matches = await self.football.get_recent_window_matches()
         form_map = build_team_form_map(all_matches)
         processed = 0
 
-        for bucket, matches in [("today", today_matches), ("tomorrow", tomorrow_matches)]:
+        for matches in buckets.values():
             for match_data in matches:
-                await self._process_match(match_data, bucket, form_map)
+                await self._process_match(match_data, form_map)
                 processed += 1
 
         self.db.commit()
-        return {"processed": processed, "today": len(today_matches), "tomorrow": len(tomorrow_matches)}
+        return {
+            "processed": processed,
+            "today": len(buckets["today"]),
+            "tomorrow": len(buckets["tomorrow"]),
+        }
 
     async def _process_match(
         self,
         match_data: dict,
-        day_bucket: str,
         form_map: dict[int, dict],
     ) -> None:
         home_data = match_data["homeTeam"]
         away_data = match_data["awayTeam"]
         home_team = self.team_repo.upsert_team(home_data)
         away_team = self.team_repo.upsert_team(away_data)
-        fixture = self.fixture_repo.upsert_fixture(match_data, home_team, away_team, day_bucket)
+        fixture = self.fixture_repo.upsert_fixture(match_data, home_team, away_team)
 
         market = await self.market_matcher.find_market(home_team.name, away_team.name)
         if market:

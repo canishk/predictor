@@ -8,8 +8,8 @@ class Settings(BaseSettings):
 
     football_data_api_key: str = ""
     database_url: str = "sqlite:///./data/worldcup.db"
-    cache_ttl_seconds: int = 900
-    refresh_interval_minutes: int = 15
+    cache_ttl_seconds: int = 3600
+    refresh_interval_minutes: int = 60
     football_data_competition_id: int = 2000
     football_data_form_lookback_days: int = 60
     cors_origins: str = "http://localhost:5173"

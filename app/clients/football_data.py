@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 import asyncio
 from typing import Any
 
@@ -6,6 +6,7 @@ import httpx
 
 from app.config import get_settings
 from app.utils.cache import cache
+from app.utils.dates import utc_today
 
 
 class FootballDataClient:
@@ -19,7 +20,6 @@ class FootballDataClient:
         return headers
 
     async def _get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        cache_key = ("football_data", path, params or {})
         cached = cache.get("football_data", path, params or {})
         if cached is not None:
             return cached
@@ -55,8 +55,8 @@ class FootballDataClient:
 
     async def get_competition_matches(
         self,
-        date_from: date,
-        date_to: date,
+        date_from,
+        date_to,
     ) -> list[dict[str, Any]]:
         competition_id = self.settings.football_data_competition_id
         data = await self._get(
@@ -68,26 +68,38 @@ class FootballDataClient:
         )
         return data.get("matches", [])
 
-    async def get_today_and_tomorrow_matches(
+    async def get_recent_window_matches(
         self,
-    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
-        today = date.today()
+    ) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
+        today = utc_today()
+        yesterday = today - timedelta(days=1)
         tomorrow = today + timedelta(days=1)
         day_after = today + timedelta(days=2)
         lookback_start = today - timedelta(days=self.settings.football_data_form_lookback_days)
 
         all_matches = await self.get_competition_matches(lookback_start, day_after)
-        today_matches: list[dict[str, Any]] = []
-        tomorrow_matches: list[dict[str, Any]] = []
+        buckets: dict[str, list[dict[str, Any]]] = {
+            "yesterday": [],
+            "today": [],
+            "tomorrow": [],
+        }
 
         for match in all_matches:
             utc_date = match.get("utcDate", "")[:10]
-            if utc_date == today.isoformat():
-                today_matches.append(match)
+            if utc_date == yesterday.isoformat():
+                buckets["yesterday"].append(match)
+            elif utc_date == today.isoformat():
+                buckets["today"].append(match)
             elif utc_date == tomorrow.isoformat():
-                tomorrow_matches.append(match)
+                buckets["tomorrow"].append(match)
 
-        return today_matches, tomorrow_matches, all_matches
+        return buckets, all_matches
+
+    async def get_today_and_tomorrow_matches(
+        self,
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+        buckets, all_matches = await self.get_recent_window_matches()
+        return buckets["today"], buckets["tomorrow"], all_matches
 
     async def get_match(self, match_id: int) -> dict[str, Any]:
         return await self._get(f"/matches/{match_id}")

@@ -4,6 +4,16 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import Fixture, Prediction, PredictionMarket, Team
+from app.utils.dates import compute_day_bucket, yesterday_tomorrow_utc_range
+
+
+def _extract_scores(match_data: dict) -> tuple[int | None, int | None]:
+    score = match_data.get("score", {}).get("fullTime", {})
+    home = score.get("home")
+    away = score.get("away")
+    if home is None or away is None:
+        return None, None
+    return int(home), int(away)
 
 
 class FixtureRepository:
@@ -15,7 +25,6 @@ class FixtureRepository:
         match_data: dict,
         home_team: Team,
         away_team: Team,
-        day_bucket: str,
     ) -> Fixture:
         match_id = match_data["id"]
         fixture = self.db.query(Fixture).filter(Fixture.match_id == match_id).first()
@@ -23,22 +32,28 @@ class FixtureRepository:
             fixture = Fixture(match_id=match_id)
             self.db.add(fixture)
 
+        utc_date = datetime.fromisoformat(match_data["utcDate"].replace("Z", "+00:00"))
+        home_score, away_score = _extract_scores(match_data)
+
         fixture.home_team_id = home_team.id
         fixture.away_team_id = away_team.id
-        fixture.utc_date = datetime.fromisoformat(match_data["utcDate"].replace("Z", "+00:00"))
+        fixture.utc_date = utc_date
         fixture.status = match_data.get("status", "SCHEDULED")
         fixture.group_name = match_data.get("group")
         fixture.stage = match_data.get("stage")
         fixture.matchday = match_data.get("matchday")
-        fixture.day_bucket = day_bucket
+        fixture.day_bucket = compute_day_bucket(utc_date)
+        fixture.home_score = home_score
+        fixture.away_score = away_score
         self.db.flush()
         return fixture
 
     def list_today_tomorrow(self) -> list[Fixture]:
+        range_start, range_end = yesterday_tomorrow_utc_range()
         return (
             self.db.query(Fixture)
             .options(joinedload(Fixture.home_team), joinedload(Fixture.away_team))
-            .filter(Fixture.day_bucket.in_(["today", "tomorrow"]))
+            .filter(Fixture.utc_date >= range_start, Fixture.utc_date <= range_end)
             .order_by(Fixture.utc_date)
             .all()
         )

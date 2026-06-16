@@ -43,6 +43,8 @@ export default function MatchDetailPage() {
   }
 
   const { fixture, prediction, recent_form, market_data } = data;
+  const hasScore = fixture.home_score !== null && fixture.away_score !== null;
+  const showFinalScore = fixture.status === "FINISHED" && hasScore;
 
   return (
     <div className="space-y-8">
@@ -55,6 +57,11 @@ export default function MatchDetailPage() {
         <h1 className="text-3xl font-bold">
           {fixture.home_team} vs {fixture.away_team}
         </h1>
+        {showFinalScore && (
+          <p className="text-2xl font-bold text-emerald-400">
+            Final: {fixture.home_score} – {fixture.away_score}
+          </p>
+        )}
         {fixture.group && <p className="text-slate-400">Group {fixture.group.replace("GROUP_", "")}</p>}
       </header>
 

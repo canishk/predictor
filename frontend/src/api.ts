@@ -5,6 +5,8 @@ export interface MatchSummary {
   kickoff: string;
   status: string;
   day_bucket: string;
+  home_score: number | null;
+  away_score: number | null;
   winner_prediction: string | null;
   home_win_probability: number | null;
   away_win_probability: number | null;
@@ -37,6 +39,8 @@ export interface MatchDetail {
     stage: string | null;
     matchday: number | null;
     day_bucket: string;
+    home_score: number | null;
+    away_score: number | null;
   };
   prediction: {
     winner: string | null;
@@ -64,7 +68,7 @@ export interface MatchDetail {
   };
 }
 
-const REFRESH_MS = 15 * 60 * 1000;
+const REFRESH_MS = 60 * 60 * 1000;
 
 export async function fetchMatches(): Promise<MatchSummary[]> {
   const res = await fetch("/api/matches");

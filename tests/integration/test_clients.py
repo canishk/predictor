@@ -1,5 +1,7 @@
 import json
+from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 import httpx
 import pytest
@@ -9,9 +11,11 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database.session import Base
 from app.database.seed_mappings import seed_team_mappings
+from app.models import Fixture
 from app.services.refresh_service import RefreshService
 
 FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXED_TODAY = date(2026, 6, 16)
 
 
 @pytest.fixture
@@ -40,7 +44,7 @@ async def test_football_data_client_matches():
         __import__("datetime").date(2026, 6, 15),
         __import__("datetime").date(2026, 6, 17),
     )
-    assert len(matches) == 1
+    assert len(matches) == 4
     assert matches[0]["homeTeam"]["name"] == "Argentina"
 
 
@@ -82,7 +86,9 @@ async def test_football_data_client_retries_on_rate_limit():
 
 @respx.mock
 @pytest.mark.asyncio
-async def test_refresh_service_pipeline(db_session):
+@patch("app.clients.football_data.utc_today", return_value=FIXED_TODAY)
+@patch("app.utils.dates.utc_today", return_value=FIXED_TODAY)
+async def test_refresh_service_pipeline(_mock_dates, _mock_client, db_session):
     football_payload = json.loads((FIXTURES / "football_matches.json").read_text())
     search_payload = json.loads((FIXTURES / "polymarket_search.json").read_text())
 
@@ -100,3 +106,9 @@ async def test_refresh_service_pipeline(db_session):
     result = await service.run()
     assert result["processed"] >= 1
     assert len(competition_route.calls) == 1
+
+    finished = db_session.query(Fixture).filter(Fixture.match_id == 500002).one()
+    assert finished.status == "FINISHED"
+    assert finished.home_score == 2
+    assert finished.away_score == 1
+    assert finished.day_bucket == "yesterday"

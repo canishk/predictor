@@ -13,6 +13,18 @@ function ConfidenceBadge({ value }: { value: number | null }) {
   return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{value}</span>;
 }
 
+function MatchScore({ match }: { match: MatchSummary }) {
+  const hasScore = match.home_score !== null && match.away_score !== null;
+  if (match.status === "FINISHED" && hasScore) {
+    return (
+      <span className="text-lg font-bold text-emerald-400">
+        {match.home_score} – {match.away_score}
+      </span>
+    );
+  }
+  return <span className="uppercase">{match.status}</span>;
+}
+
 export default function MatchCard({ match }: Props) {
   return (
     <Link
@@ -21,7 +33,7 @@ export default function MatchCard({ match }: Props) {
     >
       <div className="mb-3 flex items-center justify-between text-xs text-slate-400">
         <span>{formatKickoff(match.kickoff)}</span>
-        <span className="uppercase">{match.status}</span>
+        <MatchScore match={match} />
       </div>
 
       <div className="mb-4 space-y-1">

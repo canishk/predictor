@@ -1,6 +1,7 @@
 import { fetchMatches } from "../api";
 import MatchSection from "../components/MatchSection";
 import { usePolling } from "../hooks";
+import { groupMatchesByLocalDay } from "../matchGrouping";
 
 export default function HomePage() {
   const { data, loading, error, reload } = usePolling(fetchMatches);
@@ -29,15 +30,15 @@ export default function HomePage() {
   }
 
   const matches = data ?? [];
-  const today = matches.filter((m) => m.day_bucket === "today");
-  const tomorrow = matches.filter((m) => m.day_bucket === "tomorrow");
+  const { today, tomorrow, yesterdayRecent } = groupMatchesByLocalDay(matches);
 
   return (
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl font-bold tracking-tight">World Cup Predictor</h1>
-        <p className="mt-2 text-slate-400">Polymarket insights + Football-Data form. Auto-refreshes every 15 minutes.</p>
+        <p className="mt-2 text-slate-400">Polymarket insights + Football-Data form. Auto-refreshes every hour.</p>
       </header>
+      <MatchSection title="Yesterday" matches={yesterdayRecent} emptyLabel="No finished matches yesterday." />
       <MatchSection title="Today" matches={today} />
       <MatchSection title="Tomorrow" matches={tomorrow} />
     </div>

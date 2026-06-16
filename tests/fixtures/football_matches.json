@@ -9,6 +9,39 @@
       "group": "GROUP_A",
       "homeTeam": {"id": 10, "name": "Argentina", "shortName": "Argentina", "tla": "ARG"},
       "awayTeam": {"id": 20, "name": "Brazil", "shortName": "Brazil", "tla": "BRA"}
+    },
+    {
+      "id": 500002,
+      "utcDate": "2026-06-15T22:00:00Z",
+      "status": "FINISHED",
+      "matchday": 1,
+      "stage": "GROUP_STAGE",
+      "group": "GROUP_B",
+      "score": {
+        "fullTime": {"home": 2, "away": 1}
+      },
+      "homeTeam": {"id": 30, "name": "France", "shortName": "France", "tla": "FRA"},
+      "awayTeam": {"id": 40, "name": "Germany", "shortName": "Germany", "tla": "GER"}
+    },
+    {
+      "id": 500003,
+      "utcDate": "2026-06-16T19:00:00Z",
+      "status": "IN_PLAY",
+      "matchday": 1,
+      "stage": "GROUP_STAGE",
+      "group": "GROUP_C",
+      "homeTeam": {"id": 50, "name": "Spain", "shortName": "Spain", "tla": "ESP"},
+      "awayTeam": {"id": 60, "name": "Italy", "shortName": "Italy", "tla": "ITA"}
+    },
+    {
+      "id": 500004,
+      "utcDate": "2026-06-17T20:00:00Z",
+      "status": "TIMED",
+      "matchday": 1,
+      "stage": "GROUP_STAGE",
+      "group": "GROUP_D",
+      "homeTeam": {"id": 70, "name": "England", "shortName": "England", "tla": "ENG"},
+      "awayTeam": {"id": 80, "name": "Netherlands", "shortName": "Netherlands", "tla": "NED"}
     }
   ]
 }

@@ -10,6 +10,8 @@ class MatchSummary(BaseModel):
     kickoff: datetime
     status: str
     day_bucket: str
+    home_score: int | None = None
+    away_score: int | None = None
     winner_prediction: str | None = None
     home_win_probability: float | None = None
     away_win_probability: float | None = None
@@ -54,6 +56,8 @@ class FixtureSchema(BaseModel):
     stage: str | None = None
     matchday: int | None = None
     day_bucket: str
+    home_score: int | None = None
+    away_score: int | None = None
 
 
 class MatchDetailResponse(BaseModel):

@@ -10,7 +10,7 @@ Lightweight web app that combines **Football-Data.org** fixtures with **Polymark
 - Recent team form from last 5 completed matches
 - Match detail page with market volume, liquidity, and explanation
 - SQLite storage with prediction snapshots
-- 15-minute API cache and background refresh (APScheduler)
+- Hourly API cache and background refresh (APScheduler)
 - Dark, mobile-first React UI
 
 ## Architecture
@@ -111,8 +111,8 @@ docs/mockups/      # UI reference mockups
 |----------|---------|-------------|
 | `FOOTBALL_DATA_API_KEY` | — | Required for fixtures |
 | `DATABASE_URL` | `sqlite:///./data/worldcup.db` | SQLite path |
-| `CACHE_TTL_SECONDS` | `900` | HTTP cache TTL |
-| `REFRESH_INTERVAL_MINUTES` | `15` | Background refresh interval |
+| `CACHE_TTL_SECONDS` | `3600` | HTTP cache TTL |
+| `REFRESH_INTERVAL_MINUTES` | `60` | Background refresh interval |
 | `FOOTBALL_DATA_COMPETITION_ID` | `2000` | FIFA World Cup |
 | `CORS_ORIGINS` | `http://localhost:5173` | Frontend origin |
 

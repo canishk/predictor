@@ -36,6 +36,8 @@ class Fixture(Base):
     stage: Mapped[str | None] = mapped_column(String(40))
     matchday: Mapped[int | None] = mapped_column(Integer)
     day_bucket: Mapped[str] = mapped_column(String(20), index=True)
+    home_score: Mapped[int | None] = mapped_column(Integer)
+    away_score: Mapped[int | None] = mapped_column(Integer)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

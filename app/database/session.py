@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from pathlib import Path
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from app.config import get_settings
@@ -26,7 +26,21 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
+def _migrate_sqlite_columns() -> None:
+    if not settings.database_url.startswith("sqlite"):
+        return
+
+    with engine.connect() as conn:
+        columns = {row[1] for row in conn.execute(text("PRAGMA table_info(fixtures)")).fetchall()}
+        if "home_score" not in columns:
+            conn.execute(text("ALTER TABLE fixtures ADD COLUMN home_score INTEGER"))
+        if "away_score" not in columns:
+            conn.execute(text("ALTER TABLE fixtures ADD COLUMN away_score INTEGER"))
+        conn.commit()
+
+
 def init_db() -> None:
     import app.models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    _migrate_sqlite_columns()
