@@ -50,15 +50,15 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8001
 ```
 
-API docs: http://localhost:8000/docs
+API docs: http://localhost:8001/docs
 
 Trigger manual refresh:
 
 ```bash
-curl -X POST http://localhost:8000/api/admin/refresh
+curl -X POST http://localhost:8001/api/admin/refresh
 ```
 
 ### 3. Frontend
@@ -114,6 +114,7 @@ docs/mockups/      # UI reference mockups
 | `CACHE_TTL_SECONDS` | `3600` | HTTP cache TTL |
 | `REFRESH_INTERVAL_MINUTES` | `60` | Background refresh interval |
 | `FOOTBALL_DATA_COMPETITION_ID` | `2000` | FIFA World Cup |
+| `API_PORT` | `8001` | Uvicorn listen port |
 | `CORS_ORIGINS` | `http://localhost:5173` | Frontend origin |
 
 ## UI Mockups

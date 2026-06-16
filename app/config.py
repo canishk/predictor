@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     football_data_competition_id: int = 2000
     football_data_form_lookback_days: int = 60
     cors_origins: str = "http://localhost:5173"
+    api_port: int = 8001
     disable_scheduler: bool = False
 
     football_data_base_url: str = "https://api.football-data.org/v4"
